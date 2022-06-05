@@ -1,43 +1,45 @@
 import { Model, DataTypes } from 'sequelize';
+
 import db from '.';
 
-export default class matches extends Model {
-  id: number;
-  homeTeam: number;
-  homeTeamGoals: number;
-  awayTeam: number;
-  awayTeamGoals: number;
-  inProgress: boolean;
+export default class Matches extends Model {
+  id!: number;
+  homeTeam!: number;
+  homeTeamGoals!: number;
+  awayTeam!: number;
+  awayTeamGoals!: number;
+  inProgress!: boolean;
 }
 
-matches.init(
-  {
-    id: {
-      type: DataTypes.INTEGER,
-      allowNull: false,
-      primaryKey: true,
-      autoIncrement: true,
-    },
-    homeTeam: {
-      type: DataTypes.INTEGER,
-    },
-    homeTeamGoals: {
-      type: DataTypes.INTEGER,
-    },
-    awayTeam: {
-      type: DataTypes.INTEGER,
-    },
-    awayTeamGoals: {
-      type: DataTypes.INTEGER,
-    },
-    inProgress: {
-      type: DataTypes.BOOLEAN,
-    },
+Matches.init({
+  id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    primaryKey: true,
+    autoIncrement: true,
   },
-  {
-    timestamps: false,
-    underscored: true,
-    sequelize: db,
-    tableName: 'matches',
+  homeTeam: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
   },
-);
+  homeTeamGoals: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  awayTeam: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  awayTeamGoals: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+  },
+  inProgress: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+  },
+}, {
+  sequelize: db,
+  underscored: true,
+  modelName: 'matches',
+  timestamps: false });
