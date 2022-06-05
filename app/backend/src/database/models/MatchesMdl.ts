@@ -21,22 +21,27 @@ Matches.init({
   homeTeam: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    field: 'home_team',
   },
   homeTeamGoals: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    field: 'home_team_goals',
   },
   awayTeam: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    field: 'away_team',
   },
   awayTeamGoals: {
     type: DataTypes.INTEGER,
     allowNull: false,
+    field: 'away_team_goals',
   },
   inProgress: {
     type: DataTypes.BOOLEAN,
     allowNull: false,
+    field: 'in_progress',
   },
 }, {
   sequelize: db,
