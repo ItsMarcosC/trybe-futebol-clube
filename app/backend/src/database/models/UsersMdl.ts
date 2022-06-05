@@ -1,15 +1,15 @@
 import { Model, DataTypes } from 'sequelize';
 import db from '.';
 
-export default class Users extends Model {
+export default class User extends Model {
   id!: number;
-  username!: string;
-  role!: string;
-  email!: string;
-  password!: string;
+  username: string;
+  role: string;
+  email: string;
+  password: string;
 }
 
-Users.init({
+User.init({
   id: {
     type: DataTypes.INTEGER,
     allowNull: false,
@@ -34,7 +34,8 @@ Users.init({
   },
 }, {
   sequelize: db,
-  modelName: 'users',
+  modelName: 'User',
+  tableName: 'users',
   timestamps: false,
   underscored: true,
 });

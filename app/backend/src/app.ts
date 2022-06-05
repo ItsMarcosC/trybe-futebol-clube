@@ -1,13 +1,14 @@
-import * as cors from 'cors';
+// import * as cors from 'cors';
 import * as express from 'express';
-import loginRt from './routes/loginRt';
+import Login from './routes/loginRt';
 
 class App {
   public app: express.Express;
   constructor() {
     this.app = express();
+    this.app.use(express.json());
     this.config();
-    this.app.use(cors());
+    // this.app.use(cors());
   }
 
   private config():void {
@@ -18,7 +19,7 @@ class App {
       next();
     };
     this.app.use(accessControl);
-    this.app.use('/login', loginRt);
+    this.app.use('/login', new Login().router);
   }
 
   public start(PORT: string | number):void {
