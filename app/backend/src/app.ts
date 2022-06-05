@@ -1,4 +1,4 @@
-// import * as cors from 'cors';
+import * as cors from 'cors';
 import * as express from 'express';
 import Login from './routes/loginRt';
 
@@ -8,7 +8,7 @@ class App {
     this.app = express();
     this.app.use(express.json());
     this.config();
-    // this.app.use(cors());
+    this.app.use(cors());
   }
 
   private config():void {
