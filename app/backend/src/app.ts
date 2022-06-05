@@ -1,10 +1,13 @@
+import * as cors from 'cors';
 import * as express from 'express';
+import loginRt from './routes/loginRt';
 
 class App {
   public app: express.Express;
   constructor() {
     this.app = express();
     this.config();
+    this.app.use(cors());
   }
 
   private config():void {
@@ -15,6 +18,7 @@ class App {
       next();
     };
     this.app.use(accessControl);
+    this.app.use('/login', loginRt);
   }
 
   public start(PORT: string | number):void {
