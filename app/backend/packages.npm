@@ -1,2 +1,5 @@
 http-status-codes
 @types/http-status-codes
+bcrypt
+bcryptjs
+@types/bcrypt
