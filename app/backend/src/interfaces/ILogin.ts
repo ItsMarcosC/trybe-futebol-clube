@@ -1,4 +1,4 @@
-export default interface UserLogin {
+export default interface ILogin {
   id?: number
   username?: string
   role?: string

@@ -1,10 +1,12 @@
 import { Router } from 'express';
-import loginCtl = require('../controllers/loginCtl');
+import { loginChecker, checkToken } from '../helpers/validationHelper';
+import errorCheck from '../helpers/errorHelper';
+import { login, getRole } from '../controllers/loginCtl';
 
 const loginRt = Router();
 
-loginRt.post('/', loginCtl.loginChecker, loginCtl.login);
-loginRt.get('/validate', loginCtl.checkToken, loginCtl.getRole);
-loginRt.use(loginCtl.errorCheck);
+loginRt.post('/', loginChecker, login);
+loginRt.get('/validate', checkToken, getRole);
+loginRt.use(errorCheck);
 
 export default loginRt;
