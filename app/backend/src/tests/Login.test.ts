@@ -34,4 +34,10 @@ describe('Test if the user with ID 2 can be found', () => {
     password: 'invalidPassword'});
     expect(chaiHttpResponse).to.have.status(401);
   });
+
+  it('2- Tests if Status 200 is returned when valid info is passed to the function', async () => {
+    chaiHttpResponse = await chai.request(app).post('/login').send({email: 'user@user.com',
+    password: '$2a$08$Y8Abi8jXvsXyqm.rmp0B.uQBA5qUz7T6Ghlg/CvVr/gLxYj5UAZVO'});
+    expect(chaiHttpResponse).to.have.status(200);
+  });
 });
