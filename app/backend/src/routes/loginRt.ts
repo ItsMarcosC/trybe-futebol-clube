@@ -10,6 +10,7 @@
 import * as express from 'express';
 import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
+import { StatusCodes } from 'http-status-codes';
 import User from '../database/models/UsersMdl';
 
 const options: jwt.SignOptions = {
@@ -17,7 +18,7 @@ const options: jwt.SignOptions = {
   algorithm: 'HS256',
 };
 
-const jwtKey = () => fs
+const JWT_KEY = () => fs
   .readFileSync('./jwt.evaluation.key', { encoding: 'utf-8' })
   .trim();
 
@@ -30,25 +31,22 @@ export default class Login {
   private routes(): void {
     this.router.post('/', async (req, res) => {
       const { email, password } = req.body;
-
+      const strErrorEmpty = { message: 'All fields must be filled' };
+      const strWrongInfo = { message: 'Incorrect email or password' };
       if (!email || !password) {
-        return res.status(400).json({ message: 'All fields must be filled' });
+        return res.status(StatusCodes.BAD_REQUEST).json(strErrorEmpty);
       }
-
-      const u = await User.findOne({ where: { email } });
-
-      if (!u) {
-        return res.status(401).json({ message: 'Incorrect email or password' });
+      const user = await User.findOne({ where: { email } });
+      if (!user) {
+        return res.status(StatusCodes.UNAUTHORIZED).json(strWrongInfo);
       }
-
-      const us = { id: u?.id, email: u?.email, username: u?.username, role: u?.role };
-
-      return res.status(200).json({
-        user: { ...us },
-        token: jwt.sign({ us }, jwtKey(), options),
+      const info = { id: user?.id, email: user?.email, username: user?.username, role: user?.role };
+      return res.status(StatusCodes.OK).json({
+        user: { ...info },
+        token: jwt.sign({ info }, JWT_KEY(), options),
       });
     });
 
-    this.router.get('/validate', (req, res) => res.status(200).send('admin'));
+    this.router.get('/validate', (req, res) => res.status(StatusCodes.OK).send('admin'));
   }
 }
