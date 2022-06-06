@@ -34,4 +34,4 @@ describe('Test if the user with ID 2 can be found', () => {
     password: 'invalidPassword'});
     expect(chaiHttpResponse).to.have.status(401);
   });
-}); 
+});
