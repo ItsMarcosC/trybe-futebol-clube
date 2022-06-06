@@ -8,19 +8,10 @@
 // loginRt.use(errorCheck);
 // export default loginRt;
 import * as express from 'express';
-import * as fs from 'fs';
 import * as jwt from 'jsonwebtoken';
 import { StatusCodes } from 'http-status-codes';
 import User from '../database/models/UsersMdl';
-
-const options: jwt.SignOptions = {
-  expiresIn: '1d',
-  algorithm: 'HS256',
-};
-
-const JWT_KEY = () => fs
-  .readFileSync('./jwt.evaluation.key', { encoding: 'utf-8' })
-  .trim();
+import { JWT_KEY, options } from '../helpers/jwtHelper';
 
 export default class Login {
   constructor(public router: express.Router = express.Router()) {
