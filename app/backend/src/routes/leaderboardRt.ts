@@ -9,9 +9,7 @@ export default class Leaderboard {
 
   private routes(): void {
     this.router.get('/', ctlAll);
-
     this.router.get('/home', ctlHome);
-
     this.router.get('/away', ctlAway);
   }
 }

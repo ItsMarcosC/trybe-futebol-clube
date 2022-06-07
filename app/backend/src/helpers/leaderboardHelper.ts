@@ -2,29 +2,29 @@ import Matches from '../database/models/MatchesMdl';
 import Teams from '../database/models/TeamsMdl';
 import IBoard from '../interfaces/ILeaderboard';
 
-const homeGames = (id:number, matchs:Matches[]) => matchs
-  .filter((i) => i.homeTeam === id && !i.inProgress);
-const awayGames = (id:number, matchs:Matches[]) => matchs
-  .filter((i) => i.awayTeam === id && !i.inProgress);
-const homeDraws = (id:number, matchs:Matches[]) => homeGames(id, matchs)
-  .filter((i) => i.homeTeamGoals === i.awayTeamGoals && !i.inProgress);
-const awayDraws = (id:number, matchs:Matches[]) => awayGames(id, matchs)
-  .filter((i) => i.homeTeamGoals === i.awayTeamGoals && !i.inProgress);
-const homeVicto = (id:number, matchs:Matches[]) => homeGames(id, matchs)
-  .filter((i) => i.homeTeamGoals > i.awayTeamGoals && !i.inProgress);
-const awayVicto = (id:number, matchs:Matches[]) => awayGames(id, matchs)
-  .filter((i) => i.homeTeamGoals < i.awayTeamGoals && !i.inProgress);
+const homeMatches = (id:number, matches:Matches[]) => matches
+  .filter((index) => index.homeTeam === id && !index.inProgress);
+const awayMatches = (id:number, matches:Matches[]) => matches
+  .filter((index) => index.awayTeam === id && !index.inProgress);
+const homeDraws = (id:number, matches:Matches[]) => homeMatches(id, matches)
+  .filter((index) => index.homeTeamGoals === index.awayTeamGoals && !index.inProgress);
+const awayDraws = (id:number, matches:Matches[]) => awayMatches(id, matches)
+  .filter((index) => index.homeTeamGoals === index.awayTeamGoals && !index.inProgress);
+const homeWins = (id:number, matches:Matches[]) => homeMatches(id, matches)
+  .filter((index) => index.homeTeamGoals > index.awayTeamGoals && !index.inProgress);
+const awayWins = (id:number, matches:Matches[]) => awayMatches(id, matches)
+  .filter((index) => index.homeTeamGoals < index.awayTeamGoals && !index.inProgress);
 
-const board = (teams:Teams[], matchs:Matches[]): IBoard[] => teams.map(({ id, teamName: name }) => {
-  const totalGames = homeGames(id, matchs).length + awayGames(id, matchs).length;
-  const totalDraws = homeDraws(id, matchs).length + awayDraws(id, matchs).length;
-  const totalVictories = homeVicto(id, matchs).length + awayVicto(id, matchs).length;
-  const goalsFavorH = homeGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
-  const goalsFavorA = awayGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
-  const goalsOwnH = homeGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
-  const goalsOwnA = awayGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
+const board = (teams:Teams[], matches:Matches[]): IBoard[] => teams.map(({ id, teamName }) => {
+  const totalGames = homeMatches(id, matches).length + awayMatches(id, matches).length;
+  const totalDraws = homeDraws(id, matches).length + awayDraws(id, matches).length;
+  const totalVictories = homeWins(id, matches).length + awayWins(id, matches).length;
+  const goalsFavorH = homeMatches(id, matches).reduce((a, c) => a + c.homeTeamGoals, 0);
+  const goalsFavorA = awayMatches(id, matches).reduce((a, c) => a + c.awayTeamGoals, 0);
+  const goalsOwnH = homeMatches(id, matches).reduce((a, c) => a + c.awayTeamGoals, 0);
+  const goalsOwnA = awayMatches(id, matches).reduce((a, c) => a + c.homeTeamGoals, 0);
 
-  return { name,
+  return { name: teamName,
     totalGames,
     totalDraws,
     totalVictories,
@@ -37,15 +37,22 @@ const board = (teams:Teams[], matchs:Matches[]): IBoard[] => teams.map(({ id, te
   };
 });
 
-const boardHome = (teams:Teams[], matchs:Matches[]): IBoard[] =>
-  teams.map(({ id, teamName: name }) => {
-    const totalGames = homeGames(id, matchs).length;
-    const totalDraws = homeDraws(id, matchs).length;
-    const totalVictories = homeVicto(id, matchs).length;
-    const goalsFavorH = homeGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
-    const goalsOwnH = homeGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
+const boardSort = (leaderboard: IBoard[]) => leaderboard
+  .sort((a, b) => a.goalsOwn - b.goalsOwn)
+  .sort((a, b) => b.goalsFavor - a.goalsFavor)
+  .sort((a, b) => b.goalsBalance - a.goalsBalance)
+  .sort((a, b) => b.totalVictories - a.totalVictories)
+  .sort((a, b) => b.totalPoints - a.totalPoints);
 
-    return { name,
+const boardHome = (teams:Teams[], matches:Matches[]): IBoard[] =>
+  teams.map(({ id, teamName }) => {
+    const totalGames = homeMatches(id, matches).length;
+    const totalDraws = homeDraws(id, matches).length;
+    const totalVictories = homeWins(id, matches).length;
+    const goalsFavorH = homeMatches(id, matches).reduce((a, c) => a + c.homeTeamGoals, 0);
+    const goalsOwnH = homeMatches(id, matches).reduce((a, c) => a + c.awayTeamGoals, 0);
+
+    return { name: teamName,
       totalGames,
       totalDraws,
       totalVictories,
@@ -58,14 +65,14 @@ const boardHome = (teams:Teams[], matchs:Matches[]): IBoard[] =>
     };
   });
 
-const boardAway = (t:Teams[], matchs:Matches[]): IBoard[] =>
-  t.map(({ id, teamName: name }) => {
-    const totalGames = awayGames(id, matchs).length;
-    const totalDraws = awayDraws(id, matchs).length;
-    const totalVictories = awayVicto(id, matchs).length;
-    const goalsFavorA = awayGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
-    const goalsOwnA = awayGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
-    return { name,
+const boardAway = (teams:Teams[], matches:Matches[]): IBoard[] =>
+  teams.map(({ id, teamName }) => {
+    const totalGames = awayMatches(id, matches).length;
+    const totalDraws = awayDraws(id, matches).length;
+    const totalVictories = awayWins(id, matches).length;
+    const goalsFavorA = awayMatches(id, matches).reduce((a, c) => a + c.awayTeamGoals, 0);
+    const goalsOwnA = awayMatches(id, matches).reduce((a, c) => a + c.homeTeamGoals, 0);
+    return { name: teamName,
       totalGames,
       totalDraws,
       totalVictories,
@@ -77,12 +84,5 @@ const boardAway = (t:Teams[], matchs:Matches[]): IBoard[] =>
       efficiency: +(((totalVictories * 3 + totalDraws) / (totalGames * 3)) * 100).toFixed(2),
     };
   });
-
-const boardSort = (leaderboard: IBoard[]) => leaderboard
-  .sort((a, b) => a.goalsOwn - b.goalsOwn)
-  .sort((a, b) => b.goalsFavor - a.goalsFavor)
-  .sort((a, b) => b.goalsBalance - a.goalsBalance)
-  .sort((a, b) => b.totalVictories - a.totalVictories)
-  .sort((a, b) => b.totalPoints - a.totalPoints);
 
 export { board, boardHome, boardAway, boardSort };
