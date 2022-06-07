@@ -1,21 +1,21 @@
-import Matches from '../database/models/MatchesMdl';
-import Teams from '../database/models/TeamsMdl';
+import IMatches from '../interfaces/IMatches';
+import ITeams from '../interfaces/ITeams';
 import IBoard from '../interfaces/ILeaderboard';
 
-const homeMatches = (id:number, matches:Matches[]) => matches
+const homeMatches = (id:number, matches:IMatches[]) => matches
   .filter((index) => index.homeTeam === id && !index.inProgress);
-const awayMatches = (id:number, matches:Matches[]) => matches
+const awayMatches = (id:number, matches:IMatches[]) => matches
   .filter((index) => index.awayTeam === id && !index.inProgress);
-const homeDraws = (id:number, matches:Matches[]) => homeMatches(id, matches)
+const homeDraws = (id:number, matches:IMatches[]) => homeMatches(id, matches)
   .filter((index) => index.homeTeamGoals === index.awayTeamGoals && !index.inProgress);
-const awayDraws = (id:number, matches:Matches[]) => awayMatches(id, matches)
+const awayDraws = (id:number, matches:IMatches[]) => awayMatches(id, matches)
   .filter((index) => index.homeTeamGoals === index.awayTeamGoals && !index.inProgress);
-const homeWins = (id:number, matches:Matches[]) => homeMatches(id, matches)
+const homeWins = (id:number, matches:IMatches[]) => homeMatches(id, matches)
   .filter((index) => index.homeTeamGoals > index.awayTeamGoals && !index.inProgress);
-const awayWins = (id:number, matches:Matches[]) => awayMatches(id, matches)
+const awayWins = (id:number, matches:IMatches[]) => awayMatches(id, matches)
   .filter((index) => index.homeTeamGoals < index.awayTeamGoals && !index.inProgress);
 
-const board = (teams:Teams[], matches:Matches[]): IBoard[] => teams.map(({ id, teamName }) => {
+const board = (teams:ITeams[], matches:IMatches[]): IBoard[] => teams.map(({ id, teamName }) => {
   const totalGames = homeMatches(id, matches).length + awayMatches(id, matches).length;
   const totalDraws = homeDraws(id, matches).length + awayDraws(id, matches).length;
   const totalVictories = homeWins(id, matches).length + awayWins(id, matches).length;
@@ -44,7 +44,7 @@ const boardSort = (leaderboard: IBoard[]) => leaderboard
   .sort((a, b) => b.totalVictories - a.totalVictories)
   .sort((a, b) => b.totalPoints - a.totalPoints);
 
-const boardHome = (teams:Teams[], matches:Matches[]): IBoard[] =>
+const boardHome = (teams:ITeams[], matches:IMatches[]): IBoard[] =>
   teams.map(({ id, teamName }) => {
     const totalGames = homeMatches(id, matches).length;
     const totalDraws = homeDraws(id, matches).length;
@@ -65,7 +65,7 @@ const boardHome = (teams:Teams[], matches:Matches[]): IBoard[] =>
     };
   });
 
-const boardAway = (teams:Teams[], matches:Matches[]): IBoard[] =>
+const boardAway = (teams:ITeams[], matches:IMatches[]): IBoard[] =>
   teams.map(({ id, teamName }) => {
     const totalGames = awayMatches(id, matches).length;
     const totalDraws = awayDraws(id, matches).length;
