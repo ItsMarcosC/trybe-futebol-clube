@@ -36,7 +36,7 @@ describe('Seu teste', () => {
   //      .request(app)
   //      ...
 
-  //   expect(...)
+  //   expect(..)
   // });
 
   it('Seu sub-teste', () => {
