@@ -1,7 +1,5 @@
 import * as express from 'express';
-import { lebo, lebosort, lebohome, leboaway } from '../helpers/leaderboardHelper';
-import Matches from '../database/models/MatchesMdl';
-import Teams from '../database/models/TeamsMdl';
+import { ctlAll, ctlHome, ctlAway } from '../controllers/leaderboardCtl';
 
 export default class Leaderboard {
   constructor(public router: express.Router = express.Router()) {
@@ -10,13 +8,10 @@ export default class Leaderboard {
   }
 
   private routes(): void {
-    this.router.get('/', async (req, res) => res.status(200)
-      .json(lebosort(lebo(await Teams.findAll(), await Matches.findAll()))));
+    this.router.get('/', ctlAll);
 
-    this.router.get('/home', async (req, res) => res.status(200)
-      .json(lebosort(lebohome(await Teams.findAll(), await Matches.findAll()))));
+    this.router.get('/home', ctlHome);
 
-    this.router.get('/away', async (req, res) => res.status(200)
-      .json(lebosort(leboaway(await Teams.findAll(), await Matches.findAll()))));
+    this.router.get('/away', ctlAway);
   }
 }

@@ -1,11 +1,6 @@
 import Matches from '../database/models/MatchesMdl';
 import Teams from '../database/models/TeamsMdl';
-
-interface Lb {
-  name: string; totalGames: number; totalDraws: number; totalVictories: number;
-  totalLosses: number; totalPoints: number; goalsFavor: number; goalsOwn: number;
-  goalsBalance: number; efficiency: number;
-}
+import Lb from '../interfaces/ILeaderboard';
 
 const homeGames = (id:number, matchs:Matches[]) => matchs
   .filter((i) => i.homeTeam === id && !i.inProgress);
