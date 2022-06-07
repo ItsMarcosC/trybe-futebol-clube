@@ -1,4 +1,4 @@
-export default interface Lb {
+export default interface IBoard {
   name: string;
   totalGames: number;
   totalDraws: number;

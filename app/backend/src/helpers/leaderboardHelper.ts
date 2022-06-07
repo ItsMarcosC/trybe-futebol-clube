@@ -1,6 +1,6 @@
 import Matches from '../database/models/MatchesMdl';
 import Teams from '../database/models/TeamsMdl';
-import Lb from '../interfaces/ILeaderboard';
+import IBoard from '../interfaces/ILeaderboard';
 
 const homeGames = (id:number, matchs:Matches[]) => matchs
   .filter((i) => i.homeTeam === id && !i.inProgress);
@@ -15,7 +15,7 @@ const homeVicto = (id:number, matchs:Matches[]) => homeGames(id, matchs)
 const awayVicto = (id:number, matchs:Matches[]) => awayGames(id, matchs)
   .filter((i) => i.homeTeamGoals < i.awayTeamGoals && !i.inProgress);
 
-const lebo = (teams:Teams[], matchs:Matches[]): Lb[] => teams.map(({ id, teamName: name }) => {
+const board = (teams:Teams[], matchs:Matches[]): IBoard[] => teams.map(({ id, teamName: name }) => {
   const totalGames = homeGames(id, matchs).length + awayGames(id, matchs).length;
   const totalDraws = homeDraws(id, matchs).length + awayDraws(id, matchs).length;
   const totalVictories = homeVicto(id, matchs).length + awayVicto(id, matchs).length;
@@ -37,50 +37,52 @@ const lebo = (teams:Teams[], matchs:Matches[]): Lb[] => teams.map(({ id, teamNam
   };
 });
 
-const lebohome = (teams:Teams[], matchs:Matches[]): Lb[] => teams.map(({ id, teamName: name }) => {
-  const totalGames = homeGames(id, matchs).length;
-  const totalDraws = homeDraws(id, matchs).length;
-  const totalVictories = homeVicto(id, matchs).length;
-  const goalsFavorH = homeGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
-  const goalsOwnH = homeGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
+const boardHome = (teams:Teams[], matchs:Matches[]): IBoard[] =>
+  teams.map(({ id, teamName: name }) => {
+    const totalGames = homeGames(id, matchs).length;
+    const totalDraws = homeDraws(id, matchs).length;
+    const totalVictories = homeVicto(id, matchs).length;
+    const goalsFavorH = homeGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
+    const goalsOwnH = homeGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
 
-  return { name,
-    totalGames,
-    totalDraws,
-    totalVictories,
-    totalLosses: totalGames - totalDraws - totalVictories,
-    totalPoints: totalVictories * 3 + totalDraws,
-    goalsFavor: goalsFavorH,
-    goalsOwn: goalsOwnH,
-    goalsBalance: goalsFavorH - goalsOwnH,
-    efficiency: +(((totalVictories * 3 + totalDraws) / (totalGames * 3)) * 100).toFixed(2),
-  };
-});
+    return { name,
+      totalGames,
+      totalDraws,
+      totalVictories,
+      totalLosses: totalGames - totalDraws - totalVictories,
+      totalPoints: totalVictories * 3 + totalDraws,
+      goalsFavor: goalsFavorH,
+      goalsOwn: goalsOwnH,
+      goalsBalance: goalsFavorH - goalsOwnH,
+      efficiency: +(((totalVictories * 3 + totalDraws) / (totalGames * 3)) * 100).toFixed(2),
+    };
+  });
 
-const leboaway = (t:Teams[], matchs:Matches[]): Lb[] => t.map(({ id, teamName: name }) => {
-  const totalGames = awayGames(id, matchs).length;
-  const totalDraws = awayDraws(id, matchs).length;
-  const totalVictories = awayVicto(id, matchs).length;
-  const goalsFavorA = awayGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
-  const goalsOwnA = awayGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
-  return { name,
-    totalGames,
-    totalDraws,
-    totalVictories,
-    totalLosses: totalGames - totalDraws - totalVictories,
-    totalPoints: totalVictories * 3 + totalDraws,
-    goalsFavor: goalsFavorA,
-    goalsOwn: goalsOwnA,
-    goalsBalance: goalsFavorA - goalsOwnA,
-    efficiency: +(((totalVictories * 3 + totalDraws) / (totalGames * 3)) * 100).toFixed(2),
-  };
-});
+const boardAway = (t:Teams[], matchs:Matches[]): IBoard[] =>
+  t.map(({ id, teamName: name }) => {
+    const totalGames = awayGames(id, matchs).length;
+    const totalDraws = awayDraws(id, matchs).length;
+    const totalVictories = awayVicto(id, matchs).length;
+    const goalsFavorA = awayGames(id, matchs).reduce((a, c) => a + c.awayTeamGoals, 0);
+    const goalsOwnA = awayGames(id, matchs).reduce((a, c) => a + c.homeTeamGoals, 0);
+    return { name,
+      totalGames,
+      totalDraws,
+      totalVictories,
+      totalLosses: totalGames - totalDraws - totalVictories,
+      totalPoints: totalVictories * 3 + totalDraws,
+      goalsFavor: goalsFavorA,
+      goalsOwn: goalsOwnA,
+      goalsBalance: goalsFavorA - goalsOwnA,
+      efficiency: +(((totalVictories * 3 + totalDraws) / (totalGames * 3)) * 100).toFixed(2),
+    };
+  });
 
-const lebosort = (leaderboard: Lb[]) => leaderboard
+const boardSort = (leaderboard: IBoard[]) => leaderboard
   .sort((a, b) => a.goalsOwn - b.goalsOwn)
   .sort((a, b) => b.goalsFavor - a.goalsFavor)
   .sort((a, b) => b.goalsBalance - a.goalsBalance)
   .sort((a, b) => b.totalVictories - a.totalVictories)
   .sort((a, b) => b.totalPoints - a.totalPoints);
 
-export { lebo, lebohome, leboaway, lebosort };
+export { board, boardHome, boardAway, boardSort };
